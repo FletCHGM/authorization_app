@@ -56,8 +56,6 @@ class loginForm extends StatefulWidget {
 class loginFormState extends State<loginForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  var inputUser = User();
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -362,29 +360,36 @@ class imagePageState extends State<imagePage> {
           return AlertDialog(
             title: Image.file(image),
             actions: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Введите название фотографии',
-                ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Поле не должно быть пустым!';
-                  } else {
-                    name = value;
-                  }
-                  return null;
-                },
-              ),
               ElevatedButton(
                   onPressed: () async {
-                    var imageRef = imagesRef.child('/${inputUser.login}_$name');
-                    print('$imageRef----');
+                    DateTime CurrentTime = new DateTime.now();
+                    var imageRef = imagesRef
+                        .child('/${inputUser.login}_${CurrentTime.toString()}');
+                    var state = 1;
                     try {
                       await imageRef.putFile(image);
                     } on PlatformException catch (e) {
                       print('Failed to pick image');
+                      state = 0;
                     }
-                    ;
+                    if (state == 1) {
+                      Navigator.of(context).pop();
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Ошибка загрузки'),
+                              actions: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text("Ok"))
+                              ],
+                            );
+                          });
+                    }
                   },
                   child: Text('Отправить фото'))
             ],

@@ -13,323 +13,62 @@ class User {
   String password = '';
 }
 
-var inputUser = User();
+void UserAlert(text, context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(text),
+        actions: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Ok"))
+        ],
+      );
+    },
+  );
+}
+
+var currentUser = FirebaseAuth.instance.currentUser;
+
 var storageRef = FirebaseStorage.instance.ref();
 var imagesRef = storageRef.child("/images");
+
 void main() async {
-  runApp(const loginPage());
+  runApp(const HomePage());
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 }
 
-class loginPage extends StatelessWidget {
-  const loginPage({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Authorization app',
+      title: 'Pickture App',
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Autorization Page'),
-          centerTitle: true,
-        ),
-        body: loginForm(),
+      home: const Scaffold(
+        body: ImageList(),
       ),
     );
   }
 }
 
-class loginForm extends StatefulWidget {
-  const loginForm({super.key});
+class ImageList extends StatefulWidget {
+  const ImageList({super.key});
 
   @override
-  State<loginForm> createState() => loginFormState();
+  State<ImageList> createState() => ImageListState();
 }
 
-class loginFormState extends State<loginForm> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: 'Email',
-            ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Поле не должно быть пустым!';
-              } else {
-                inputUser.login = value;
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: 'Пароль',
-            ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Поле не должно быть пустым!';
-              } else {
-                inputUser.password = value;
-              }
-              return null;
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: ElevatedButton(
-              onPressed: () async {
-                var authState = "";
-                if (_formKey.currentState!.validate()) {
-                  try {
-                    final credential = await FirebaseAuth.instance
-                        .signInWithEmailAndPassword(
-                            email: inputUser.login,
-                            password: inputUser.password);
-                  } on FirebaseAuthException catch (e) {
-                    authState = e.code;
-                  }
-                }
-                ;
-                switch (authState) {
-                  case 'user-not-found':
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(
-                              "Пользователя ${inputUser.login} не существует"),
-                          actions: [
-                            ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text("Ok"))
-                          ],
-                        );
-                      },
-                    );
-                    break;
-                  case 'wrong-password':
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text("Неправильный пароль"),
-                          actions: [
-                            ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text("Ok"))
-                          ],
-                        );
-                      },
-                    );
-                    break;
-                  default:
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => imagePage()));
-                    break;
-                }
-              },
-              child: const Text('Войти'),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => regPage()));
-            },
-            child: const Text('Зарегистрироваться'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class regPage extends StatelessWidget {
-  const regPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Registration Page'),
-        centerTitle: true,
-      ),
-      body: regForm(),
-    );
-  }
-}
-
-class regForm extends StatefulWidget {
-  const regForm({super.key});
-
-  @override
-  State<regForm> createState() => regFormState();
-}
-
-class regFormState extends State<regForm> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  String passwd = '';
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: 'Email',
-            ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Поле не должно быть пустым!';
-              } else {
-                inputUser.login = value;
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: 'Пароль',
-            ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Поле не должно быть пустым!';
-              } else {
-                passwd = value;
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: 'Подтвердите пароль',
-            ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Поле не должно быть пустым!';
-              } else if (value == passwd) {
-                inputUser.password = value;
-              } else if (value != passwd) {
-                return 'Пароли не совпадают!';
-              }
-              return null;
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  var regState = '';
-                  try {
-                    final credential = await FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
-                      email: inputUser.login,
-                      password: inputUser.password,
-                    );
-                  } on FirebaseAuthException catch (e) {
-                    regState = e.code;
-                  } catch (e) {
-                    print(e);
-                  }
-                  switch (regState) {
-                    case "weak-password":
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text("Ваш пароль слишком простой"),
-                            actions: [
-                              ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text("Ok"))
-                            ],
-                          );
-                        },
-                      );
-                      break;
-                    case "email-already-in-use":
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text(
-                                "Аккаунт ${inputUser.login} уже зарегистрирован"),
-                            actions: [
-                              ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text("Ok"))
-                            ],
-                          );
-                        },
-                      );
-                      break;
-                    default:
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => loginPage()));
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text(
-                                "Вы успешно зарегистрировали аккаунт ${inputUser.login}"),
-                            actions: [
-                              ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text("Ok"))
-                            ],
-                          );
-                        },
-                      );
-                      break;
-                  }
-                  print(inputUser.login);
-                  print(inputUser.password);
-                }
-              },
-              child: const Text('Зарегистрироваться'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class imagePage extends StatefulWidget {
-  const imagePage({super.key});
-
-  @override
-  State<imagePage> createState() => imagePageState();
-}
-
-class imagePageState extends State<imagePage> {
+class ImageListState extends State<ImageList> {
   Future getImageFromGallery() async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image != null) {
@@ -352,6 +91,7 @@ class imagePageState extends State<imagePage> {
 
   void uploadImage(File image) async {
     var name = '';
+    currentUser = FirebaseAuth.instance.currentUser;
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -361,35 +101,22 @@ class imagePageState extends State<imagePage> {
               ElevatedButton(
                   onPressed: () async {
                     DateTime CurrentTime = new DateTime.now();
-                    var imageRef = imagesRef
-                        .child('/${inputUser.login}_${CurrentTime.toString()}');
+                    var imageRef = imagesRef.child(
+                        '/${currentUser?.email.toString()}_${CurrentTime.toString()}');
                     var state = 1;
                     try {
                       await imageRef.putFile(image);
                     } on PlatformException catch (e) {
-                      print('Failed to pick image');
                       state = 0;
                     }
                     if (state == 1) {
                       Navigator.of(context).pop();
+                      Navigator.of(context).pop();
                     } else {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Ошибка загрузки'),
-                              actions: [
-                                ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text("Ok"))
-                              ],
-                            );
-                          });
+                      UserAlert('Ошибка загрузки', context);
                     }
                   },
-                  child: Text('Отправить фото'))
+                  child: const Text('Отправить фото'))
             ],
           );
         });
@@ -397,33 +124,304 @@ class imagePageState extends State<imagePage> {
 
   @override
   Widget build(BuildContext context) {
+    currentUser = FirebaseAuth.instance.currentUser;
+    print("$currentUser!!!");
+    if (currentUser != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Загруженные картинки'),
+          centerTitle: true,
+          actions: [
+            ElevatedButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const LoginPage()));
+                },
+                child: const Text("Выйти"))
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Загрузить фотографию"),
+                  actions: [
+                    ElevatedButton(
+                        onPressed: () async {
+                          await getImageFromGallery();
+                        },
+                        child: const Text("Выбрать из галереи")),
+                    ElevatedButton(
+                        onPressed: () async {
+                          await getImageFromCamera();
+                        },
+                        child: const Text("Сфотографировать"))
+                  ],
+                );
+              },
+            );
+          },
+          child: const Text('+'),
+        ),
+      );
+    } else {
+      return AlertDialog(
+        title: const Text("Войдите в свой аккаунт"),
+        actions: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const LoginPage()));
+              },
+              child: const Text("Войти"))
+        ],
+      );
+    }
+  }
+}
+
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Pickture App',
+      theme: ThemeData(
+        primarySwatch: Colors.red,
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Вход'),
+          centerTitle: true,
+        ),
+        body: const LoginForm(),
+      ),
+    );
+  }
+}
+
+class LoginForm extends StatefulWidget {
+  const LoginForm({super.key});
+
+  @override
+  State<LoginForm> createState() => LoginFormState();
+}
+
+class LoginFormState extends State<LoginForm> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    var inputUser = User();
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            TextFormField(
+              decoration: const InputDecoration(
+                hintText: 'Email',
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Поле не должно быть пустым!';
+                } else {
+                  inputUser.login = value;
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                hintText: 'Пароль',
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Поле не должно быть пустым!';
+                } else {
+                  inputUser.password = value;
+                }
+                return null;
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  var authState = '';
+                  if (_formKey.currentState!.validate()) {
+                    try {
+                      final credential = await FirebaseAuth.instance
+                          .signInWithEmailAndPassword(
+                              email: inputUser.login,
+                              password: inputUser.password);
+                      authState = 'Succes';
+                    } on FirebaseAuthException catch (e) {
+                      authState = e.code;
+                      print("$authState&&");
+                    }
+                  }
+                  ;
+                  switch (authState) {
+                    case 'user-not-found':
+                      UserAlert("Пользователя ${inputUser.login} не существует",
+                          context);
+                      break;
+                    case 'wrong-password':
+                      UserAlert("Неправильный пароль", context);
+                      break;
+                    case 'invalid-email':
+                      UserAlert("Пользователя ${inputUser.login} не существует",
+                          context);
+                      break;
+                    case 'Succes':
+                      currentUser = FirebaseAuth.instance.currentUser;
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => HomePage()));
+                      break;
+                  }
+                },
+                child: const Text('Войти'),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => RegPage()));
+              },
+              child: const Text('Зарегистрироваться'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RegPage extends StatelessWidget {
+  const RegPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBar(title: const Text("Загруженные картинки"), centerTitle: true),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text("Загрузить фотографию"),
-                actions: [
-                  ElevatedButton(
-                      onPressed: () async {
-                        await getImageFromGallery();
-                      },
-                      child: Text("Выбрать из галереи")),
-                  ElevatedButton(
-                      onPressed: () async {
-                        await getImageFromCamera();
-                      },
-                      child: Text("Сфотографировать"))
-                ],
-              );
-            },
-          );
-        },
-        child: Text('+'),
+      appBar: AppBar(
+        title: const Text('Зарегистрироваться'),
+        centerTitle: true,
+      ),
+      body: const RegForm(),
+    );
+  }
+}
+
+class RegForm extends StatefulWidget {
+  const RegForm({super.key});
+
+  @override
+  State<RegForm> createState() => RegFormState();
+}
+
+class RegFormState extends State<RegForm> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  String passwd = '';
+  @override
+  Widget build(BuildContext context) {
+    var inputUser = User();
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            TextFormField(
+              decoration: const InputDecoration(
+                hintText: 'Email',
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Поле не должно быть пустым!';
+                } else {
+                  inputUser.login = value;
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                hintText: 'Пароль',
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Поле не должно быть пустым!';
+                } else {
+                  passwd = value;
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                hintText: 'Подтвердите пароль',
+              ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Поле не должно быть пустым!';
+                } else if (value == passwd) {
+                  inputUser.password = value;
+                } else if (value != passwd) {
+                  return 'Пароли не совпадают!';
+                }
+                return null;
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    var regState = '';
+                    try {
+                      await FirebaseAuth.instance
+                          .createUserWithEmailAndPassword(
+                        email: inputUser.login,
+                        password: inputUser.password,
+                      );
+                    } on FirebaseAuthException catch (e) {
+                      regState = e.code;
+                    } catch (e) {
+                      print(e);
+                    }
+                    switch (regState) {
+                      case "weak-password":
+                        UserAlert("Ваш пароль слишком простой", context);
+                        break;
+                      case "email-already-in-use":
+                        UserAlert(
+                            "Аккаунт ${inputUser.login} уже зарегистрирован",
+                            context);
+                        break;
+                      default:
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const LoginForm()));
+                        UserAlert(
+                            "Вы успешно зарегистрировали аккаунт ${inputUser.login}",
+                            context);
+                        break;
+                    }
+                  }
+                },
+                child: const Text('Зарегистрироваться'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

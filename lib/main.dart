@@ -31,6 +31,7 @@ void UserAlert(text, context) {
   );
 }
 
+////
 var currentUser = FirebaseAuth.instance.currentUser;
 
 var storageRef = FirebaseStorage.instance.ref();

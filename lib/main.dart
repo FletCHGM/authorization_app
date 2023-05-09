@@ -122,25 +122,55 @@ class ImageListState extends State<ImageList> {
         });
   }
 
+  Future<List<Image>> getFirebaseImages() async {
+    var imagesList = await imagesRef.listAll();
+    var imagesReference = imagesList.items;
+    var paths = [];
+    List<Image> images = [];
+    for (var i in imagesReference) {
+      var ImagesPath = i.fullPath;
+      paths.add(ImagesPath);
+    }
+    for (var i in paths) {
+      var imageRawFile = await storageRef.child(i).getData();
+      var imageFile = Image.memory(imageRawFile as Uint8List);
+      images.add(imageFile);
+    }
+    return images;
+  }
+
+  List<Image>? _imagesList;
   @override
   Widget build(BuildContext context) {
     currentUser = FirebaseAuth.instance.currentUser;
-    print("$currentUser!!!");
     if (currentUser != null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Загруженные картинки'),
+          title: const Text('Картинки'),
           centerTitle: true,
           actions: [
             ElevatedButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
+              onPressed: () async {
+                List<Image> images = await getFirebaseImages();
+                _imagesList = images;
+                setState(() {});
+              },
+              child: const Icon(Icons.refresh),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const LoginPage()));
                 },
-                child: const Text("Выйти"))
+                child: const Icon(Icons.login))
           ],
         ),
+        body: (_imagesList == null)
+            ? SizedBox()
+            : ListView.builder(
+                itemBuilder: (context, i) => _imagesList![i],
+                itemCount: _imagesList!.length),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             showDialog(
@@ -409,7 +439,7 @@ class RegFormState extends State<RegForm> {
                         break;
                       default:
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const LoginForm()));
+                            builder: (context) => const LoginPage()));
                         UserAlert(
                             "Вы успешно зарегистрировали аккаунт ${inputUser.login}",
                             context);

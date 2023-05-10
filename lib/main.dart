@@ -38,6 +38,7 @@ var storageRef = FirebaseStorage.instance.ref();
 var imagesRef = storageRef.child("/images");
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

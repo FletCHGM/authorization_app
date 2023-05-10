@@ -38,11 +38,10 @@ var storageRef = FirebaseStorage.instance.ref();
 var imagesRef = storageRef.child("/images");
 
 void main() async {
-  runApp(const HomePage());
-
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  runApp(const HomePage());
 }
 
 class HomePage extends StatelessWidget {

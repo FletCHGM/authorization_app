@@ -1,12 +1,6 @@
 import '../Home/widgets/widgets_view.dart';
 
 class ImageHero {
-  fullScreenImage(BuildContext context, Image image) {
-    Scaffold imageScreen = Scaffold(
-      body: image,
-    );
-  }
-
   imageHero(BuildContext context) async {
     List images = await FirebaseImagePicker().getFirebaseImages();
     List<Hero> boxList = [];

@@ -29,7 +29,6 @@ class FirebaseImagePicker {
   }
 
   void uploadImage(File image, context) async {
-    var name = '';
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -38,7 +37,7 @@ class FirebaseImagePicker {
             actions: [
               ElevatedButton(
                   onPressed: () async {
-                    DateTime CurrentTime = new DateTime.now();
+                    DateTime CurrentTime = DateTime.now();
                     var user = currentUser();
                     var imageRef = imagesRef.child(
                         '/${user?.email.toString()}_${CurrentTime.toString()}');
@@ -68,8 +67,8 @@ class FirebaseImagePicker {
     var paths = [];
     List images = [];
     for (var i in imagesReference) {
-      var ImagesPath = i.fullPath;
-      paths.add(ImagesPath);
+      var imagesPath = i.fullPath;
+      paths.add(imagesPath);
     }
     for (var i in paths) {
       var imageURL = await storageRef.child(i).getDownloadURL();

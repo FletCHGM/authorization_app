@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 export 'dart:io';
 export 'package:firebase_auth/firebase_auth.dart';
 export 'package:firebase_storage/firebase_storage.dart';

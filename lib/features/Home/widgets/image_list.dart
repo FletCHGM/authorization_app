@@ -36,7 +36,7 @@ class ImageListState extends State<ImageList> {
           ],
         ),
         body: (_imagesList == null)
-            ? SizedBox(
+            ? const SizedBox(
                 child: Center(
                     child: Text(
                 "Обновите страницу",

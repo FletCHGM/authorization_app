@@ -1,4 +1,4 @@
-import 'widgetsView.dart'; //файл экспорта необходимых зависимостей
+import 'widgets_view.dart';
 
 class ImageList extends StatefulWidget {
   const ImageList({super.key});
@@ -8,12 +8,11 @@ class ImageList extends StatefulWidget {
 }
 
 class ImageListState extends State<ImageList> {
-  List<Image>? _imagesList;
-
+  List<Hero>? _imagesList;
+  var isSuccess = false;
   @override
   Widget build(BuildContext context) {
-    currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser != null) {
+    if (FirebaseImagePicker().currentUser() != null) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Картинки'),
@@ -21,7 +20,7 @@ class ImageListState extends State<ImageList> {
           actions: [
             ElevatedButton(
               onPressed: () async {
-                List<Image> images = await getFirebaseImages();
+                List<Hero> images = await ImageHero().imageHero(context);
                 _imagesList = images;
                 setState(() {});
               },
@@ -37,8 +36,19 @@ class ImageListState extends State<ImageList> {
           ],
         ),
         body: (_imagesList == null)
-            ? SizedBox()
-            : ListView.builder(
+            ? SizedBox(
+                child: Center(
+                    child: Text(
+                "Обновите страницу",
+                textScaleFactor: 2.4,
+              )))
+            : GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 4,
+                  mainAxisSpacing: 4,
+                  childAspectRatio: 0.85,
+                ),
                 itemBuilder: (context, i) => _imagesList![i],
                 itemCount: _imagesList!.length),
         floatingActionButton: FloatingActionButton(
@@ -51,12 +61,14 @@ class ImageListState extends State<ImageList> {
                   actions: [
                     ElevatedButton(
                         onPressed: () async {
-                          await getImageFromGallery(context);
+                          await FirebaseImagePicker()
+                              .getImageFromGallery(context);
                         },
                         child: const Text("Выбрать из галереи")),
                     ElevatedButton(
                         onPressed: () async {
-                          await getImageFromCamera(context);
+                          await FirebaseImagePicker()
+                              .getImageFromCamera(context);
                         },
                         child: const Text("Сфотографировать"))
                   ],

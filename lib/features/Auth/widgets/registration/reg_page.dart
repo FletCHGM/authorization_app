@@ -1,4 +1,4 @@
-import 'widgets/widgetView.dart'; //файл экспорта необходимых зависимостей
+import '../widget_view.dart';
 
 class RegPage extends StatelessWidget {
   const RegPage({super.key});

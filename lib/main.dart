@@ -1,4 +1,4 @@
-import 'features/mainView.dart'; //главный файл экспорта всех зависимостей проекта
+import 'features/main_view.dart'; //главный файл экспорта всех зависимостей проекта
 
 ////
 

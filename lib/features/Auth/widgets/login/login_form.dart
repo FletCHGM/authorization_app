@@ -1,4 +1,4 @@
-import 'widgetView.dart'; //файл экспорта необходимых зависимостей
+import '../widget_view.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -9,10 +9,10 @@ class LoginForm extends StatefulWidget {
 
 class LoginFormState extends State<LoginForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  final login = TextEditingController();
+  final passwd = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    var inputUser = InputUser();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Form(
@@ -21,29 +21,25 @@ class LoginFormState extends State<LoginForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextFormField(
+              controller: login,
               decoration: const InputDecoration(
                 hintText: 'Email',
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Поле не должно быть пустым!';
-                } else {
-                  inputUser.login = value;
                 }
-                return null;
               },
             ),
             TextFormField(
+              controller: passwd,
               decoration: const InputDecoration(
                 hintText: 'Пароль',
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Поле не должно быть пустым!';
-                } else {
-                  inputUser.password = value;
                 }
-                return null;
               },
             ),
             Padding(
@@ -53,43 +49,23 @@ class LoginFormState extends State<LoginForm> {
                   var authState = '';
                   if (_formKey.currentState!.validate()) {
                     try {
-                      final credential = await FirebaseAuth.instance
-                          .signInWithEmailAndPassword(
-                              email: inputUser.login,
-                              password: inputUser.password);
-                      authState = 'Succes';
+                      await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: login.text, password: passwd.text);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const HomePage()));
                     } on FirebaseAuthException catch (e) {
                       authState = e.code;
-                      print("$authState&&");
                     }
                   }
-                  ;
-                  switch (authState) {
-                    case 'user-not-found':
-                      UserAlert("Пользователя ${inputUser.login} не существует",
-                          context);
-                      break;
-                    case 'wrong-password':
-                      UserAlert("Неправильный пароль", context);
-                      break;
-                    case 'invalid-email':
-                      UserAlert("Пользователя ${inputUser.login} не существует",
-                          context);
-                      break;
-                    case 'Succes':
-                      currentUser = FirebaseAuth.instance.currentUser;
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => HomePage()));
-                      break;
-                  }
+                  UserAlert().loginErrorAlerts(authState, context);
                 },
                 child: const Text('Войти'),
               ),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => RegPage()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const RegPage()));
               },
               child: const Text('Зарегистрироваться'),
             ),

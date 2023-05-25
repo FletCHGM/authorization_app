@@ -1,12 +1,23 @@
 import '../Home/widgets/widgets_view.dart';
 
 class ImageHero {
-  imageHero(BuildContext context) async {
-    List images = await FirebaseImagePicker().getFirebaseImages();
-    List<Hero> boxList = [];
+  pickImageList(int page) async {
+    List paths = await FirebaseImagePicker().getFirebaseImagesPaths(page);
+    List URLs = await FirebaseImagePicker().getFirebaseImagesURLs(paths);
+    return URLs;
+  }
+
+  imageHero(BuildContext context, int page) async {
+    List<Hero> miniHeroList = [];
     List<Hero> heroList = [];
+    int i;
     String image;
-    for (image in images) {
+    List URLs = await pickImageList(page);
+    if (URLs.isEmpty) {
+      List<Hero> emptyList = [];
+      return emptyList;
+    }
+    for (image in URLs) {
       Hero heroFullImage = Hero(
           tag: image,
           child: Scaffold(
@@ -26,8 +37,8 @@ class ImageHero {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => Material(child: heroFullImage)));
                   })));
-      boxList.add(heroSmallImage);
+      miniHeroList.add(heroSmallImage);
     }
-    return boxList;
+    return miniHeroList;
   }
 }

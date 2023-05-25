@@ -45,7 +45,7 @@ class FirebaseImagePicker {
                     try {
                       await imageRef.putFile(image);
                       state = true;
-                    } on PlatformException catch (e) {
+                    } on PlatformException {
                       state = false;
                     }
                     if (state == true) {
@@ -61,20 +61,34 @@ class FirebaseImagePicker {
         });
   }
 
-  Future<List> getFirebaseImages() async {
+  getFirebaseImagesPaths(int page) async {
     var imagesList = await imagesRef.listAll();
     var imagesReference = imagesList.items;
     var paths = [];
-    List images = [];
-    for (var i in imagesReference) {
-      var imagesPath = i.fullPath;
-      paths.add(imagesPath);
+    int i = page * 28;
+    while (i < (((page + 1) * 28) - 1)) {
+      if (i <= imagesReference.length) {
+        paths.add(imagesReference[i].fullPath);
+        i++;
+      } else {
+        break;
+      }
     }
+
+    return paths;
+  }
+
+  getFirebaseImagesURLs(List paths) async {
+    List URLs = [];
     for (var i in paths) {
-      var imageURL = await storageRef.child(i).getDownloadURL();
-      images.add(imageURL);
-      print(imageURL);
+      if (URLs.length < 28 || URLs.isEmpty) {
+        var imageURL = await storageRef.child(i).getDownloadURL();
+        URLs.add(imageURL);
+      } else {
+        break;
+      }
     }
-    return images;
+
+    return URLs;
   }
 }

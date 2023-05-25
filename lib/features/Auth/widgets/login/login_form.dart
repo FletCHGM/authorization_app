@@ -11,6 +11,7 @@ class LoginFormState extends State<LoginForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final login = TextEditingController();
   final passwd = TextEditingController();
+  bool _passwordVisible = false;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -33,8 +34,18 @@ class LoginFormState extends State<LoginForm> {
             ),
             TextFormField(
               controller: passwd,
-              decoration: const InputDecoration(
+              obscureText: !_passwordVisible,
+              decoration: InputDecoration(
                 hintText: 'Пароль',
+                suffixIcon: IconButton(
+                    icon: Icon(_passwordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _passwordVisible = !_passwordVisible;
+                      });
+                    }),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {

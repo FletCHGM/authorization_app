@@ -8,8 +8,40 @@ class ImageList extends StatefulWidget {
 }
 
 class ImageListState extends State<ImageList> {
-  List<Hero>? _imagesList;
-  var isSuccess = false;
+  final scrollController = ScrollController();
+  bool isSuccess = false;
+  bool isLoading = true;
+  int _countOfPacks = 0;
+  List<Hero> images = [];
+  List<Hero> _imagesList = [];
+  Future<void> _pickImagesList() async {
+    images = await ImageHero().imageHero(context, _countOfPacks);
+    _imagesList.addAll(images);
+  }
+
+  @override
+  void initState() {
+    _imagesList = [];
+    _countOfPacks = 0;
+    isLoading = true;
+    _pickImagesList();
+    setState(() {});
+    super.initState();
+
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent ==
+          scrollController.offset) {
+        if (!images.isEmpty) {
+          _countOfPacks++;
+          _pickImagesList();
+          setState(() {});
+        } else {
+          isLoading = false;
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (FirebaseImagePicker().currentUser() != null) {
@@ -19,14 +51,6 @@ class ImageListState extends State<ImageList> {
           centerTitle: true,
           actions: [
             ElevatedButton(
-              onPressed: () async {
-                List<Hero> images = await ImageHero().imageHero(context);
-                _imagesList = images;
-                setState(() {});
-              },
-              child: const Icon(Icons.refresh),
-            ),
-            ElevatedButton(
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();
                   Navigator.of(context).push(MaterialPageRoute(
@@ -35,22 +59,36 @@ class ImageListState extends State<ImageList> {
                 child: const Icon(Icons.login))
           ],
         ),
-        body: (_imagesList == null)
-            ? const SizedBox(
-                child: Center(
-                    child: Text(
-                "Обновите страницу",
-                textScaleFactor: 2.4,
-              )))
-            : GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 4,
-                  mainAxisSpacing: 4,
-                  childAspectRatio: 0.85,
-                ),
-                itemBuilder: (context, i) => _imagesList![i],
-                itemCount: _imagesList!.length),
+        body: (_imagesList.isEmpty)
+            ? const Center(child: CircularProgressIndicator())
+            : RefreshIndicator(
+                child: GridView.builder(
+                    controller: scrollController,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 4,
+                      mainAxisSpacing: 4,
+                      childAspectRatio: 0.85,
+                    ),
+                    itemBuilder: (context, i) {
+                      if (i < _imagesList!.length) {
+                        return _imagesList![i];
+                      } else {
+                        if (isLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      }
+                    },
+                    itemCount: (_imagesList!.length) + 1),
+                onRefresh: () async {
+                  _countOfPacks = 0;
+                  await _pickImagesList();
+                  _imagesList.clear;
+                  setState(() {});
+                }),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             showDialog(

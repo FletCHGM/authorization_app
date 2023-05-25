@@ -13,6 +13,7 @@ class RegFormState extends State<RegForm> {
   final login = TextEditingController();
   final passwd = TextEditingController();
   final confirmPasswd = TextEditingController();
+  bool _passwordVisible = false;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -35,8 +36,18 @@ class RegFormState extends State<RegForm> {
             ),
             TextFormField(
               controller: passwd,
-              decoration: const InputDecoration(
+              obscureText: !_passwordVisible,
+              decoration: InputDecoration(
                 hintText: 'Пароль',
+                suffixIcon: IconButton(
+                    icon: Icon(_passwordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _passwordVisible = !_passwordVisible;
+                      });
+                    }),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
@@ -46,8 +57,18 @@ class RegFormState extends State<RegForm> {
             ),
             TextFormField(
               controller: confirmPasswd,
-              decoration: const InputDecoration(
+              obscureText: !_passwordVisible,
+              decoration: InputDecoration(
                 hintText: 'Подтвердите пароль',
+                suffixIcon: IconButton(
+                    icon: Icon(_passwordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _passwordVisible = !_passwordVisible;
+                      });
+                    }),
               ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {

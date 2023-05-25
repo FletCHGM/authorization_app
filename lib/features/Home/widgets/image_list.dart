@@ -72,8 +72,8 @@ class ImageListState extends State<ImageList> {
                       childAspectRatio: 0.85,
                     ),
                     itemBuilder: (context, i) {
-                      if (i < _imagesList!.length) {
-                        return _imagesList![i];
+                      if (i < _imagesList.length) {
+                        return _imagesList[i];
                       } else {
                         if (isLoading) {
                           return const Center(
@@ -82,7 +82,7 @@ class ImageListState extends State<ImageList> {
                         }
                       }
                     },
-                    itemCount: (_imagesList!.length) + 1),
+                    itemCount: (_imagesList.length) + 1),
                 onRefresh: () async {
                   _countOfPacks = 0;
                   await _pickImagesList();

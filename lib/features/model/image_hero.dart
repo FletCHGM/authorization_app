@@ -10,7 +10,6 @@ class ImageHero {
   imageHero(BuildContext context, int page) async {
     List<Hero> miniHeroList = [];
     List<Hero> heroList = [];
-    int i;
     String image;
     List URLs = await pickImageList(page);
     if (URLs.isEmpty) {

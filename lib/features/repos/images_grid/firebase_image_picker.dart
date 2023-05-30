@@ -1,4 +1,4 @@
-import 'model_view.dart';
+import '../repos_view.dart';
 
 final Reference storageRef = FirebaseStorage.instance.ref();
 final Reference imagesRef = storageRef.child("/images");
@@ -8,7 +8,7 @@ class FirebaseImagePicker {
     return FirebaseAuth.instance.currentUser;
   }
 
-  Future getImageFromGallery(context) async {
+  Future<void> getImageFromGallery(BuildContext context) async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image != null) {
       File imageFile = File(image.path);
@@ -16,7 +16,7 @@ class FirebaseImagePicker {
     }
   }
 
-  Future getImageFromCamera(context) async {
+  Future<void> getImageFromCamera(BuildContext context) async {
     final image = await ImagePicker().pickImage(source: ImageSource.camera);
     if (image != null) {
       File imageFile = File(image.path);
@@ -24,7 +24,7 @@ class FirebaseImagePicker {
     }
   }
 
-  void uploadImage(File image, context) async {
+  void uploadImage(File image, BuildContext context) async {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -57,9 +57,9 @@ class FirebaseImagePicker {
         });
   }
 
-  getFirebaseImagesPaths(ListResult items) {
+  List<String> getFirebaseImagesPaths(ListResult items) {
     var imagesReference = items.items;
-    List paths = [];
+    List<String> paths = [];
     Reference i;
     for (i in imagesReference) {
       paths.add(i.fullPath);
@@ -67,8 +67,8 @@ class FirebaseImagePicker {
     return paths;
   }
 
-  getFirebaseImagesURLs(List paths) async {
-    List URLs = [];
+  Future<List<String>> getFirebaseImagesURLs(List<String> paths) async {
+    List<String> URLs = [];
     for (var i in paths) {
       if (URLs.length < 28) {
         var imageURL = await storageRef.child(i).getDownloadURL();

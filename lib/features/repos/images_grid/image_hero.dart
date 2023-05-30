@@ -1,7 +1,7 @@
-import '../Home/widgets/widgets_view.dart';
+import '../repos_view.dart';
 
 class ImageHero {
-  imageHero(BuildContext context, List URLs) {
+  List<Hero> imageHero(BuildContext context, List<String> URLs) {
     List<Hero> miniHeroList = [];
     List<Hero> heroList = [];
     String image;

@@ -1,4 +1,4 @@
-import '../widget_view.dart';
+import 'package:authorization_app/features/auth/widgets/widget_view.dart';
 
 class RegPage extends StatelessWidget {
   const RegPage({super.key});

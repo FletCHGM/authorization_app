@@ -1,2 +1,2 @@
-export 'home_page.dart';
-export '../model/model_view.dart';
+export 'app.dart';
+export '../repos/repos_view.dart';

@@ -29,7 +29,9 @@ class LoginFormState extends State<LoginForm> {
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Поле не должно быть пустым!';
-                } else {return null;}
+                } else {
+                  return null;
+                }
               },
             ),
             TextFormField(
@@ -50,7 +52,9 @@ class LoginFormState extends State<LoginForm> {
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Поле не должно быть пустым!';
-                } else {return null;}
+                } else {
+                  return null;
+                }
               },
             ),
             Padding(

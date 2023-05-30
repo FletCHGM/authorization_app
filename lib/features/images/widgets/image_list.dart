@@ -13,8 +13,8 @@ class ImageListState extends State<ImageList> {
   bool isLoading = true;
   List<Hero> images = [];
   List<Hero> _imagesList = [];
-  List? URLs;
-  List paths = [];
+  List<String>? URLs;
+  List<String> paths = [];
   ListResult? items;
 
   void pickImages() async {
@@ -79,12 +79,18 @@ class ImageListState extends State<ImageList> {
           centerTitle: true,
           actions: [
             ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const RandomPickPage()));
+                },
+                child: const Icon(Icons.emoji_nature)),
+            ElevatedButton(
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const LoginPage()));
                 },
-                child: const Icon(Icons.login))
+                child: const Icon(Icons.login)),
           ],
         ),
         body: (_imagesList.isEmpty)

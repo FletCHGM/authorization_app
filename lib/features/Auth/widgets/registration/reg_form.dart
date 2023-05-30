@@ -1,4 +1,4 @@
-import '../widget_view.dart';
+import 'package:authorization_app/features/auth/widgets/widget_view.dart';
 
 class RegForm extends StatefulWidget {
   const RegForm({super.key});
@@ -31,7 +31,9 @@ class RegFormState extends State<RegForm> {
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Поле не должно быть пустым!';
-                } else {return null;}
+                } else {
+                  return null;
+                }
               },
             ),
             TextFormField(
@@ -52,7 +54,9 @@ class RegFormState extends State<RegForm> {
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Поле не должно быть пустым!';
-                } else {return null;}
+                } else {
+                  return null;
+                }
               },
             ),
             TextFormField(

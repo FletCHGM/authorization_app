@@ -31,7 +31,7 @@ class RegFormState extends State<RegForm> {
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Поле не должно быть пустым!';
-                }
+                } else {return null;}
               },
             ),
             TextFormField(
@@ -52,7 +52,7 @@ class RegFormState extends State<RegForm> {
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Поле не должно быть пустым!';
-                }
+                } else {return null;}
               },
             ),
             TextFormField(

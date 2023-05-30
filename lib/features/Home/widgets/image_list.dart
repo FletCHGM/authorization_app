@@ -11,33 +11,61 @@ class ImageListState extends State<ImageList> {
   final scrollController = ScrollController();
   bool isSuccess = false;
   bool isLoading = true;
-  int _countOfPacks = 0;
   List<Hero> images = [];
   List<Hero> _imagesList = [];
-  Future<void> _pickImagesList() async {
-    images = await ImageHero().imageHero(context, _countOfPacks);
-    _imagesList.addAll(images);
+  List? URLs;
+  List paths = [];
+  ListResult? items;
+
+  void pickImages() async {
+    URLs = await FirebaseImagePicker().getFirebaseImagesURLs(paths);
+    var i = URLs!.length;
+    while (i > 0) {
+      paths.remove(paths.first);
+      i--;
+    }
+    List<Hero> pickedImages = ImageHero().imageHero(context, URLs!);
+    if (!pickedImages.isEmpty) {
+      for (var i in pickedImages) {
+        _imagesList.add(i);
+      }
+    } else {
+      isLoading = false;
+    }
+    setState(() {});
+  }
+
+  void _pickImagesToInit() async {
+    items = await imagesRef.listAll();
+    paths = await FirebaseImagePicker().getFirebaseImagesPaths(items!);
+    URLs = await FirebaseImagePicker().getFirebaseImagesURLs(paths);
+    _imagesList = ImageHero().imageHero(context, URLs!);
+    var i = URLs!.length;
+    while (i > 0) {
+      paths.remove(paths.first);
+      i--;
+    }
+    setState(() {});
+  }
+
+  void refresh() {
+    setState(() {
+      _imagesList.clear();
+      isLoading = true;
+    });
+    _pickImagesToInit();
   }
 
   @override
   void initState() {
-    _imagesList = [];
-    _countOfPacks = 0;
+    _pickImagesToInit();
+    print(_imagesList.length);
     isLoading = true;
-    _pickImagesList();
-    setState(() {});
     super.initState();
-
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent ==
           scrollController.offset) {
-        if (!images.isEmpty) {
-          _countOfPacks++;
-          _pickImagesList();
-          setState(() {});
-        } else {
-          isLoading = false;
-        }
+        pickImages();
       }
     });
   }
@@ -79,15 +107,14 @@ class ImageListState extends State<ImageList> {
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
+                        } else {
+                          return SizedBox();
                         }
                       }
                     },
                     itemCount: (_imagesList.length) + 1),
                 onRefresh: () async {
-                  _countOfPacks = 0;
-                  await _pickImagesList();
-                  _imagesList.clear;
-                  setState(() {});
+                  refresh();
                 }),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -114,7 +141,7 @@ class ImageListState extends State<ImageList> {
               },
             );
           },
-          child: const Text('+'),
+          child: const Icon(Icons.upload),
         ),
       );
     } else {

@@ -12,9 +12,7 @@ class FirebaseImagePicker {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image != null) {
       File imageFile = File(image.path);
-      if (imageFile != null) {
-        uploadImage(imageFile, context);
-      }
+      uploadImage(imageFile, context);
     }
   }
 
@@ -22,9 +20,7 @@ class FirebaseImagePicker {
     final image = await ImagePicker().pickImage(source: ImageSource.camera);
     if (image != null) {
       File imageFile = File(image.path);
-      if (imageFile != null) {
-        uploadImage(imageFile, context);
-      }
+      uploadImage(imageFile, context);
     }
   }
 
@@ -61,34 +57,27 @@ class FirebaseImagePicker {
         });
   }
 
-  getFirebaseImagesPaths(int page) async {
-    var imagesList = await imagesRef.listAll();
-    var imagesReference = imagesList.items;
-    var paths = [];
-    int i = page * 28;
-    while (i < (((page + 1) * 28) - 1)) {
-      if (i <= imagesReference.length) {
-        paths.add(imagesReference[i].fullPath);
-        i++;
-      } else {
-        break;
-      }
+  getFirebaseImagesPaths(ListResult items) {
+    var imagesReference = items.items;
+    List paths = [];
+    Reference i;
+    for (i in imagesReference) {
+      paths.add(i.fullPath);
     }
-
     return paths;
   }
 
   getFirebaseImagesURLs(List paths) async {
     List URLs = [];
     for (var i in paths) {
-      if (URLs.length < 28 || URLs.isEmpty) {
+      if (URLs.length < 28) {
         var imageURL = await storageRef.child(i).getDownloadURL();
         URLs.add(imageURL);
       } else {
         break;
       }
     }
-
+    print(URLs.length);
     return URLs;
   }
 }

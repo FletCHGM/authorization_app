@@ -77,7 +77,6 @@ class FirebaseImagePicker {
         break;
       }
     }
-    print(URLs.length);
     return URLs;
   }
 }

@@ -14,7 +14,7 @@ class ImageHero {
           tag: image,
           child: Scaffold(
             appBar: AppBar(),
-            body: Image.network(image),
+            body: Center(child: Image.network(image)),
           ));
       heroList.add(heroFullImage);
       Hero heroSmallImage = Hero(

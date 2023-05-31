@@ -18,7 +18,6 @@ class RandomPickBodyState extends State<RandomPickBody> {
 
   void getDoggyPick() async {
     pick = await ApiResponse().randDoggyPick();
-    print(pick);
     setState(() {});
   }
 

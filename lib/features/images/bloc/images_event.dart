@@ -1,13 +1,13 @@
 part of 'images_bloc.dart';
 
-class ImagesEvent {}
+sealed class ImagesEvent {}
 
-class FirstTryToLoadImages extends ImagesEvent {
+class FirstTryToLoadImages implements ImagesEvent {
   FirstTryToLoadImages(this.context);
   BuildContext context;
 }
 
-class TryToLoadImages extends ImagesEvent {
+class TryToLoadImages implements ImagesEvent {
   TryToLoadImages(this.context, this.paths);
   BuildContext context;
   List<String> paths;

@@ -5,8 +5,8 @@ part 'auth_bloc_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
     on<TryToLogin>((event, emit) async {
-      emit(AuthLoadig());
       try {
+        emit(AuthLoadig());
         await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: event.login!, password: event.passwd!);
         Navigator.of(event.context!)
@@ -18,8 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
     on<TryToReg>((event, emit) async {
-      emit(AuthLoadig());
       try {
+        emit(AuthLoadig());
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: event.login!,
           password: event.passwd!,

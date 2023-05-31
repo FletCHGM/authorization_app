@@ -20,15 +20,22 @@ class ImageListState extends State<ImageList> {
     _imagesBloc.add(FirstTryToLoadImages(context));
   }
 
+  void imageEvent(bool isFirst) {
+    return switch (isFirst) {
+      true => _imagesBloc.add(FirstTryToLoadImages(context)),
+      false => _imagesBloc.add(TryToLoadImages(context, paths))
+    };
+  }
+
   @override
   void initState() {
     super.initState();
-    _imagesBloc.add(FirstTryToLoadImages(context));
+    imageEvent(true);
     setState(() {});
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent ==
           scrollController.offset) {
-        _imagesBloc.add(TryToLoadImages(context, paths));
+        imageEvent(false);
         setState(() {});
       }
     });

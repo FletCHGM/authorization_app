@@ -9,12 +9,23 @@ class RegForm extends StatefulWidget {
 
 class RegFormState extends State<RegForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final login = TextEditingController();
   final passwd = TextEditingController();
   final confirmPasswd = TextEditingController();
   final _authBloc = AuthBloc();
   bool _passwordVisible = false;
+
+  String? regSwitch(BuildContext context, String login, String passwd) {
+    _authBloc.add(TryToReg(login, passwd, context));
+    final state = _authBloc.state;
+    return switch (state) {
+      AuthSuccess() => 'success',
+      AuthFailure() => 'fail',
+      AuthLoadig() => 'loading',
+      AuthInitial() => null,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
@@ -90,10 +101,9 @@ class RegFormState extends State<RegForm> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: ElevatedButton(
-                    onPressed: () async {
+                    onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        _authBloc
-                            .add(TryToReg(login.text, passwd.text, context));
+                        regSwitch(context, login.text, passwd.text);
                       }
                     },
                     child: (state is AuthLoadig)

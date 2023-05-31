@@ -1,14 +1,14 @@
 part of 'auth_bloc_bloc.dart';
 
-class AuthState {}
+sealed class AuthState {}
 
-class AuthInitial extends AuthState {}
+class AuthInitial implements AuthState {}
 
-class AuthLoadig extends AuthState {}
+class AuthLoadig implements AuthState {}
 
-class AuthSuccess extends AuthState {}
+class AuthSuccess implements AuthState {}
 
-class AuthFailure extends AuthState {
+class AuthFailure implements AuthState {
   AuthFailure(this.error);
   String? error;
 }

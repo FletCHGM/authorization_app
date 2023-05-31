@@ -12,7 +12,20 @@ class LoginFormState extends State<LoginForm> {
   final login = TextEditingController();
   final passwd = TextEditingController();
   final _authBloc = AuthBloc();
+  String? result;
   bool _passwordVisible = false;
+
+  String? loginSwitch(BuildContext context, String login, String passwd) {
+    _authBloc.add(TryToLogin(login, passwd, context));
+    final state = _authBloc.state;
+    return switch (state) {
+      AuthSuccess() => 'success',
+      AuthFailure() => 'fail',
+      AuthLoadig() => 'loading',
+      AuthInitial() => null,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
@@ -64,12 +77,8 @@ class LoginFormState extends State<LoginForm> {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        _authBloc
-                            .add(TryToLogin(login.text, passwd.text, context));
+                        loginSwitch(context, login.text, passwd.text);
                       }
-                      if (state is AuthFailure) {
-                        UserAlert().loginErrorAlerts(state.error!, context);
-                      } else {}
                     },
                     child: (state is AuthLoadig)
                         ? const CircularProgressIndicator(
